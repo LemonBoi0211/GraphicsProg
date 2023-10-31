@@ -11,7 +11,11 @@ public:
 	LightBase();
 	~LightBase();
 
-	void Draw(Camera* Cam);
+	Transform GetTransform();
+
+	void Draw(Camera& Cam);
+
+	vec3 m_colour;
 
 private:
 	Transform m_transform;

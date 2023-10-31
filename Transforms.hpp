@@ -27,10 +27,10 @@ public:
 
 public:
 	void setPos(vec3 p) { m_position = p; }
-	vec3 getPos() const { return m_position; }
+	vec3 getPos() { return m_position; }
 
 	void setRot(vec3 r) { m_rotation = r; }
-	vec3 getRot() const { return m_rotation; }
+	vec3 getRot() { return m_rotation; }
 
 	void setScale(vec3 s) { m_scale = s; }
 	vec3 getScale() const { return m_scale; }

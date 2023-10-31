@@ -14,6 +14,8 @@
 #include "Shader.h"
 #include "Camera.h"
 #include "stb_image.h"
+#include "Input.h"
+#include "LightBase.h"
 
 #undef SDL_main
 
@@ -67,7 +69,7 @@ int main(int argc, char* argv[])
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
 
 	SDL_Window* window = SDL_CreateWindow("My Window", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-		1000, 800, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+		1200, 1000, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 	SDL_GLContext GLContext = SDL_GL_CreateContext(window);
 
 	glewExperimental = GL_TRUE;
@@ -81,29 +83,27 @@ int main(int argc, char* argv[])
 		std::cout << "GLEW failed to initialize!" << endl;
 	}
 
-	Camera* cam = new Camera(90.0f, 1000.0f/800.0f, 0.1f, 100.0f);
-
+	Camera* cam = new Camera(90.0f, 1200.0f/1000.0f, 0.1f, 100.0f);
+	LightBase* light1 = new LightBase();
 	cam->m_transform.setPos(vec3(0, 0, 1));
 
 	Shader* basicShader = new Shader("Resources/basic", *cam);
 	
+	Input* input = new Input();
 
 	//Square
 	vector<Vertex> SquareVerticies;
 
-	SquareVerticies.push_back( Vertex(vec3(-0.5f, 0.5f, 1.0f), vec2(0, 0)));
-	SquareVerticies.push_back( Vertex(vec3(0.5f, 0.5f, 1.0f), vec2(1, 0)));
-	SquareVerticies.push_back( Vertex(vec3(0.5f, -0.5f, 1.0f), vec2(1, 1)));
-	SquareVerticies.push_back( Vertex(vec3(-0.5f, -0.5f, 1.0f), vec2(0, 1)));
+	SquareVerticies.push_back( Vertex(vec3(-1.0f, 1.0f, 1.0f), vec2(0, 0)));
+	SquareVerticies.push_back( Vertex(vec3(1.0f, 1.0f, 1.0f), vec2(1, 0)));
+	SquareVerticies.push_back( Vertex(vec3(1.0f, -1.0f, 1.0f), vec2(1, 1)));
+	SquareVerticies.push_back( Vertex(vec3(-1.0f, -1.0f, 1.0f), vec2(0, 1)));
 
 	unsigned int SquareIndicies[]
 	{
 		0,1,2,0,3,2
 	};
 
-
-	//triangle mesh
-	//Mesh Tri1(Verticies1, 9);
 
 	//square mesh
 	Mesh Square1(&SquareVerticies[0], SquareVerticies.size(), &SquareIndicies[0], 6);
@@ -113,31 +113,15 @@ int main(int argc, char* argv[])
 
 	LoadTexture("assets/brickwall.jpg");
 
-	while (true)
+	while (!input->KeyIsPressed(KEY_ESCAPE))
 	{
-		////create window and switch colours
-		//SDL_Delay(1500);
-
-		//glClearColor(0, 0.15f, 0.3f, 1);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glViewport(0, 0, 1000, 800);
-
-		//SDL_GL_SwapWindow(window);
-
-		//SDL_Delay(1500);
-		//
-		//glClearColor(0.3f, 0.0f, 0, 1);
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//glViewport(0, 0, 1000, 800);
-
-		//SDL_GL_SwapWindow(window);
-
-		//SDL_Delay(1500);
+		input->Update();
+		light1->Draw(*cam);
 
 		//display Square
 		glClearColor(0.3f, 0.3f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glViewport(0, 0, 1000, 800);
+		glViewport(0, 0, 1200, 1000);
 
 		basicShader->Bind();
 
