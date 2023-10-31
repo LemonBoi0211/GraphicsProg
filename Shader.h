@@ -30,6 +30,7 @@ public:
 
 	void Update(Transform &transform);
 	void Bind();
+	GLuint GetProgram();
 
 private:
 	string Name;

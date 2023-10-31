@@ -101,6 +101,11 @@ void Shader::Bind()
 	glUseProgram(m_program);
 }
 
+GLuint Shader::GetProgram()
+{
+	return m_program;
+}
+
 void Shader::Update(Transform& transform)
 {
 	mat4 projection = m_camera->GetPerspectiveProjection();

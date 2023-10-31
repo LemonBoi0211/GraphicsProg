@@ -110,6 +110,9 @@ int main(int argc, char* argv[])
 
 	Square1.m_transform.setPos(vec3(0, 0, -1.0f));
 
+
+	LoadTexture("assets/brickwall.jpg");
+
 	while (true)
 	{
 		////create window and switch colours
