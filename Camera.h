@@ -12,7 +12,12 @@ public:
 
 	mat4 GetViewMatrix();
 
+	void Update();
+
+
 	Transform m_transform;
+
+	vec3 Target = vec3(0);
 
 	mat4 m_PerspecProjec;
 
@@ -20,6 +25,21 @@ public:
 	{
 		return m_PerspecProjec;
 	}
+
+	void MoveForwardLocal(float scalar)
+	{
+		vec3 OldPos = this->m_transform.getPos();
+		this->m_transform.setPos(OldPos + (m_forward * scalar));
+		Target += (m_forward * scalar);
+	}
+
+	void MoveRightLocal(float scalar)
+	{
+		vec3 OldPos = this->m_transform.getPos();
+		this->m_transform.setPos(OldPos + (m_right * scalar));
+		Target += (m_right* scalar);
+	}
+
 
 private:
 	vec3 m_forward;

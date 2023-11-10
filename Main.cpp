@@ -83,9 +83,11 @@ int main(int argc, char* argv[])
 		std::cout << "GLEW failed to initialize!" << endl;
 	}
 
-	Camera* cam = new Camera(90.0f, 1200.0f/1000.0f, 0.1f, 100.0f);
+	Camera* cam = new Camera(90.0f, 1200.0f/1000.0f, 0.1f, 1000.0f);
+
 	LightBase* light1 = new LightBase();
-	cam->m_transform.setPos(vec3(0, 0, 1));
+	
+	cam->m_transform.setPos(vec3(0, 0, -1));
 
 	Shader* basicShader = new Shader("Resources/basic", *cam);
 	
@@ -94,10 +96,15 @@ int main(int argc, char* argv[])
 	//Square
 	vector<Vertex> SquareVerticies;
 
-	SquareVerticies.push_back( Vertex(vec3(-1.0f, 1.0f, 1.0f), vec2(0, 0)));
-	SquareVerticies.push_back( Vertex(vec3(1.0f, 1.0f, 1.0f), vec2(1, 0)));
-	SquareVerticies.push_back( Vertex(vec3(1.0f, -1.0f, 1.0f), vec2(1, 1)));
-	SquareVerticies.push_back( Vertex(vec3(-1.0f, -1.0f, 1.0f), vec2(0, 1)));
+	SquareVerticies.push_back( Vertex(vec3(-1.0f, 1.0f, 1.0f), vec2(0, 0))); //0
+	SquareVerticies.push_back( Vertex(vec3(1.0f, 1.0f, 1.0f), vec2(1, 0))); //1
+	SquareVerticies.push_back( Vertex(vec3(1.0f, -1.0f, 1.0f), vec2(1, 1))); //2
+	SquareVerticies.push_back( Vertex(vec3(-1.0f, -1.0f, 1.0f), vec2(0, 1))); //3
+
+	/*SquareVerticies.push_back(Vertex(vec3(-1.0f, 1.0f, 2.0f), vec2(0, 0))); //4
+	SquareVerticies.push_back(Vertex(vec3(1.0f, 1.0f, 2.0f), vec2(1, 0))); //5
+	SquareVerticies.push_back(Vertex(vec3(1.0f, -1.0f, 2.0f), vec2(1, 1))); //6
+	SquareVerticies.push_back(Vertex(vec3(-1.0f, -1.0f, 2.0f), vec2(0, 1)));*/ //7
 
 	unsigned int SquareIndicies[]
 	{
@@ -108,8 +115,7 @@ int main(int argc, char* argv[])
 	//square mesh
 	Mesh Square1(&SquareVerticies[0], SquareVerticies.size(), &SquareIndicies[0], 6);
 
-	Square1.m_transform.setPos(vec3(0, 0, -1.0f));
-
+	Square1.m_transform.setPos(vec3(0, 0, 1));
 
 	LoadTexture("assets/brickwall.jpg");
 
@@ -117,12 +123,39 @@ int main(int argc, char* argv[])
 	{
 		input->Update();
 		light1->Draw(*cam);
+		cam->Update();
+
+		//cam move
+		if (input->KeyIsPressed(KEY_W))
+		{
+			cout << "Forward" << endl;
+			cam->MoveForwardLocal(-0.1f);
+		}
+
+		if (input->KeyIsPressed(KEY_S))
+		{
+			cout << "Back" << endl;
+			cam->MoveForwardLocal(0.1f);
+		}
+
+		if (input->KeyIsPressed(KEY_A))
+		{
+			cout << "Left" << endl;
+			cam->MoveRightLocal(-0.1f);
+		}
+
+		if (input->KeyIsPressed(KEY_D))
+		{
+			cout << "Right" << endl;
+			cam->MoveRightLocal(0.1f);
+		}
 
 		//display Square
 		glClearColor(0.3f, 0.3f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glViewport(0, 0, 1200, 1000);
 
+		//bind shader
 		basicShader->Bind();
 
 		glActiveTexture(GL_TEXTURE0);
