@@ -1,0 +1,63 @@
+glm::mat4 Camera::GetViewMatrix()
+{
+	m_CurrentTarget = m_Target;
+	if (!m_UseTarget)
+	{
+		m_CurrentTarget = M_Transfrom.GetPosition() + m_Forward;
+	}
+											//current target
+												//	\/
+	return glm::lookAt(M_Transfrom.GetPosition(), m_CurrentTarget, m_Up);
+}
+
+
+
+
+
+
+bool firstMove = true;
+GLint lastX;
+GLint lastY;
+
+
+void Camera::MouseMoveTarget(SDL_Event *e)
+{
+	if (!m_UseTarget)
+	{
+		int mouseX, mouseY;
+		SDL_GetMouseState(&mouseX, &mouseY);
+		if (firstMove)
+		{
+			lastX = mouseX;
+			lastY = mouseY;
+			firstMove = false;
+		}
+
+		GLfloat xOffset = mouseX - lastX;
+		GLfloat yOffset = lastY - mouseY;
+		lastX = mouseX;
+		lastY = mouseY;
+
+		GLfloat sensitivity = 0.5;
+
+		xOffset *= sensitivity;
+		yOffset *= sensitivity;
+
+		M_Transfrom.GetRotation().y += xOffset; //Yaw.... huuurrr, yeah! what is it good for?!
+		M_Transfrom.GetRotation().x += yOffset; //pitch
+
+		//stop gimmble lock (rotation crazyness!!)
+		if (M_Transfrom.GetRotation().x > 89.0f)
+			M_Transfrom.GetRotation().x = 89.0f;
+		if (M_Transfrom.GetRotation().x < -89.0f)
+			M_Transfrom.GetRotation().x = -89.0f;
+
+		vec3 front;
+		front.x = cos(radians(M_Transfrom.GetRotation().y)) * cos(radians(M_Transfrom.GetRotation().x));
+		front.y = sin(radians(M_Transfrom.GetRotation().x));
+		front.z = sin(radians(M_Transfrom.GetRotation().y)) * cos(radians(M_Transfrom.GetRotation().x));
+
+		m_Forward = normalize(front);
+		//cout << m_Forward.x <<" "<<m_Forward.y <<" "<<m_Forward.z << endl;
+	}
+}
