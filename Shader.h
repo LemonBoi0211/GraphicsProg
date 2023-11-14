@@ -4,6 +4,7 @@
 #include <fstream>
 #include "Transforms.hpp"
 #include "Camera.h"
+#include "LightBase.h"
 
 using namespace std;
 
@@ -19,6 +20,9 @@ enum UniformNames
 	MODEL_U,
 	PROJECTION_U,
 	VIEW_U,
+	FRAG_LIGHTCOLOR_U,
+	FRAG_LIGHTPOS_U,
+	FRAG_CAMERAPOS_U,
 	NUM_UNIFORMS,
 };
 
@@ -28,7 +32,7 @@ public:
 	Shader(const string FileLocation, Camera &camera);
 	~Shader();
 
-	void Update(Transform &transform);
+	void Update(Transform &transform, LightBase& light);
 	void Bind();
 	GLuint GetProgram();
 

@@ -1,6 +1,7 @@
 #include "Mesh.h"
 #include "Vertex.h"
 #include <vector>
+#include <glm/gtx/normal.hpp>
 
 using namespace std;
 
@@ -15,6 +16,21 @@ Mesh::Mesh(Vertex* verts, unsigned int vertCount, unsigned int *indices, unsigne
 	{
 		positions.push_back(verts[i].Position);
 		texCoords.push_back(verts[i].TextureCoord);
+	}
+
+	vector<vec3> Normals;
+	Normals.resize(vertCount);
+
+	for ( int i = 0; i < numIndices; i += 3 )
+	{
+		vec3 Vert1 = positions[ indices[ i ] ];
+		vec3 Vert2 = positions[ indices[ i + 1 ] ];
+		vec3 Vert3 = positions[ indices[ i + 2 ] ];
+
+		vec3 normal = triangleNormal(Vert1, Vert2, Vert3);
+		Normals[ indices[ i ] ] += normal;
+		Normals[ indices[ i + 1 ] ] += normal;
+		Normals[ indices[ i + 2 ] ] += normal;
 	}
 
 	glGenVertexArrays(1, &m_vertexArrayObject);
@@ -39,6 +55,14 @@ Mesh::Mesh(Vertex* verts, unsigned int vertCount, unsigned int *indices, unsigne
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
 	glBindVertexArray(0);
+
+	//Normal
+	glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferObjects[ NORMAL_VB ]);
+	glBufferData(GL_ARRAY_BUFFER, vertCount * sizeof(Normals[ 0 ]), &Normals[ 0 ], GL_STATIC_DRAW);
+	glVertexAttribPointer(NORMAL_VB, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(NORMAL_VB);
+
+	
 }
 
 Mesh::~Mesh()

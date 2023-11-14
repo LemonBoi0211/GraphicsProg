@@ -162,7 +162,7 @@ int main(int argc, char* argv[])
 		GLuint TextureLoc = glGetUniformLocation(basicShader->GetProgram(), "texture_diffuse");
 		glUniform1i(TextureLoc, 0);
 		glBindTexture(GL_TEXTURE_2D, textureID);
-		basicShader->Update(Square1.m_transform);
+		basicShader->Update(Square1.m_transform, *light1);
 		Square1.Draw();
 
 		SDL_GL_SwapWindow(window);

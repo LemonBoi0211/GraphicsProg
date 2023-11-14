@@ -8,7 +8,7 @@ void LightBase::Draw(Camera& Cam)
 
 	glMatrixMode(GL_PROJECTION);
 	float* temp = &Cam.GetPerspectiveProjection()[0][0];
-	glLoadMatrixf(temp);
+	glLoadMatrixf(( temp ));
 	glMatrixMode(GL_MODELVIEW);
 	glm::mat4 MV = Cam.GetViewMatrix() * m_transform.GetModel();
 	glLoadMatrixf((const GLfloat*)&MV[0]);

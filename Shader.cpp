@@ -88,6 +88,10 @@ Shader::Shader(const string FileLocation, Camera& camera)
 	m_Uniforms[PROJECTION_U] = glGetUniformLocation(m_program, "projection");
 	m_Uniforms[VIEW_U] = glGetUniformLocation(m_program, "view");
 
+	m_Uniforms[ FRAG_LIGHTCOLOR_U ] = glGetUniformLocation(m_program, "FragLightColor");
+	m_Uniforms[ FRAG_LIGHTPOS_U ] = glGetUniformLocation(m_program, "FragLightPos");
+	m_Uniforms[ FRAG_CAMERAPOS_U ] = glGetUniformLocation(m_program, "FragCamPos");
+
 	for (GLuint i = 0; i < NUM_UNIFORMS; i++)
 	{
 		if (m_Uniforms[i] == GL_INVALID_INDEX)
@@ -106,7 +110,7 @@ GLuint Shader::GetProgram()
 	return m_program;
 }
 
-void Shader::Update(Transform& transform)
+void Shader::Update(Transform& transform, LightBase& light)
 {
 	mat4 projection = m_camera->GetPerspectiveProjection();
 	mat4 view = m_camera->GetViewMatrix();
@@ -115,6 +119,10 @@ void Shader::Update(Transform& transform)
 	glUniformMatrix4fv(m_Uniforms[MODEL_U], 1, GL_FALSE, &model[0][0]);
 	glUniformMatrix4fv(m_Uniforms[PROJECTION_U], 1, GL_FALSE, &projection[0][0]);
 	glUniformMatrix4fv(m_Uniforms[VIEW_U], 1, GL_FALSE, &view[0][0]);
+
+	glUniform3f(m_Uniforms[FRAG_LIGHTCOLOR_U], light.m_colour.x, light.m_colour.y, light.m_colour.z);
+	glUniform3f(m_Uniforms[FRAG_LIGHTPOS_U], light.GetTransform().getPos().x, light.GetTransform().getPos().y, light.GetTransform().getPos().z);
+	glUniform3f(m_Uniforms[FRAG_CAMERAPOS_U], m_camera->m_transform.getPos().x, m_camera->m_transform.getPos().y, m_camera->m_transform.getPos().z);
 }
 
 Shader::~Shader()
