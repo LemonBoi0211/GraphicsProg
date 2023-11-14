@@ -115,7 +115,7 @@ int main(int argc, char* argv[])
 	//square mesh
 	Mesh Square1(&SquareVerticies[0], SquareVerticies.size(), &SquareIndicies[0], 6);
 
-	Square1.m_transform.setPos(vec3(0, 0, 1));
+	Square1.m_transform.setPos(vec3(0, 0, 0));
 
 	LoadTexture("assets/brickwall.jpg");
 
