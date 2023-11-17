@@ -13,8 +13,10 @@ enum
 {
 	POSITION_VB,
 	TEXCOORD_VB,
-	INDEX_VB,
 	NORMAL_VB,
+	TANGENT_VB,
+	BITANGENT_VB,
+	INDEX_VB,
 	NUM_BUFFERS,
 };
 
@@ -24,6 +26,8 @@ public:
 	Mesh(Vertex* verts, unsigned int vertCount, unsigned int *indices, unsigned int numIndices);
 	void Draw();
 	~Mesh();
+
+	void CalculateTangentsBiTangents(Vertex* verticies, unsigned int vertCount, unsigned int* indices, unsigned int numIndices);
 
 	Transform m_transform;
 

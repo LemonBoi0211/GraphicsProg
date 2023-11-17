@@ -29,7 +29,13 @@ public:
 	void setPos(vec3 p) { m_position = p; }
 	vec3 getPos() { return m_position; }
 
-	void setRot(vec3 r) { m_rotation = r; }
+	void setRot(vec3 r, bool degrees = false) 
+	{
+		if ( degrees )
+			m_rotation = radians(r);
+		else
+			m_rotation = r;
+	}
 	vec3 getRot() { return m_rotation; }
 
 	void setScale(vec3 s) { m_scale = s; }

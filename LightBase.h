@@ -11,7 +11,7 @@ public:
 	LightBase();
 	~LightBase();
 
-	Transform GetTransform();
+	Transform& GetTransform();
 
 	void Draw(Camera& Cam);
 

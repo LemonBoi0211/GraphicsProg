@@ -48,7 +48,7 @@ LightBase::~LightBase()
 
 }
 
-Transform LightBase::GetTransform()
+Transform& LightBase::GetTransform()
 {
 	return m_transform;
 }
