@@ -73,5 +73,11 @@
     <None Include="Resources\basic.vert">
       <Filter>Resource Files</Filter>
     </None>
+    <None Include="Resources\depthShader.frag">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="Resources\depthShader.vert">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

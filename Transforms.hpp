@@ -27,6 +27,7 @@ public:
 
 public:
 	void setPos(vec3 p) { m_position = p; }
+	void AddPosition(vec3 p) { m_position -= p; }
 	vec3 getPos() { return m_position; }
 
 	void setRot(vec3 r, bool degrees = false) 
@@ -36,7 +37,7 @@ public:
 		else
 			m_rotation = r;
 	}
-	vec3 getRot() { return m_rotation; }
+	vec3& getRot() { return m_rotation; }
 
 	void setScale(vec3 s) { m_scale = s; }
 	vec3 getScale() const { return m_scale; }

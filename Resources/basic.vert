@@ -9,11 +9,16 @@ in vec3 BiTangent;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform mat4 lightSpaceMatrix;
 
 out vec2 FragTextureCoord;
 out vec3 FragNormal;
 out vec3 FragPos;
 out mat3 TBN;
+
+out vec4 fragPosLightSpace;
+out vec3 VsNormal;
+
 
 void main()
 {
@@ -22,6 +27,9 @@ void main()
 
 	FragPos = vec3(model* vec4(VertexPosition, 1.0f));
 	FragNormal = mat3(transpose(inverse(model))) *Normal;
+
+	fragPosLightSpace = lightSpaceMatrix * vec4(FragPos, 1.0);
+	VsNormal = Normal;
 
 	vec3 T = normalize(vec3(model* vec4(Tangent, 0.0)));
 	vec3 B = normalize(vec3(model* vec4(BiTangent, 0.0)));

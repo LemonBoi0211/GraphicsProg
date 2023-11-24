@@ -1,6 +1,7 @@
 #pragma once
 #include <glm\glm.hpp>
-#include <glm\gtx\transform.hpp>
+#include "Transforms.hpp"
+#include <SDL.h>
 
 using namespace glm;
 
@@ -14,10 +15,14 @@ public:
 
 	void Update();
 
+	void MouseMoveTarget(SDL_Event *e);
 
 	Transform m_transform;
 
 	vec3 Target = vec3(0);
+	
+
+	bool m_useTarget =false;
 
 	mat4 m_PerspecProjec;
 

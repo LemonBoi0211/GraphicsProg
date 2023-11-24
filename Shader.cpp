@@ -110,7 +110,7 @@ GLuint Shader::GetProgram()
 	return m_program;
 }
 
-void Shader::Update(Transform& transform, LightBase& light)
+void Shader::Update(Transform& transform, LightBase& light, mat4& LightSpaceMatrix)
 {
 	mat4 projection = m_camera->GetPerspectiveProjection();
 	mat4 view = m_camera->GetViewMatrix();
@@ -123,6 +123,14 @@ void Shader::Update(Transform& transform, LightBase& light)
 	glUniform3f(m_Uniforms[FRAG_LIGHTCOLOR_U], light.m_colour.x, light.m_colour.y, light.m_colour.z);
 	glUniform3f(m_Uniforms[FRAG_LIGHTPOS_U], light.GetTransform().getPos().x, light.GetTransform().getPos().y, light.GetTransform().getPos().z);
 	glUniform3f(m_Uniforms[FRAG_CAMERAPOS_U], m_camera->m_transform.getPos().x, m_camera->m_transform.getPos().y, m_camera->m_transform.getPos().z);
+
+	glUniformMatrix4fv(glGetUniformLocation(m_program, "lightSpaceMatrix"), 1, GL_FALSE, &LightSpaceMatrix[ 0 ][ 0 ]);
+}
+
+void Shader::UpdateForShadows(Transform& transform, mat4& LightSpaceMatrix)
+{
+	glUniformMatrix4fv(glGetUniformLocation(m_program, "model"), 1, GL_FALSE, &transform.GetModel()[0][0]);
+	glUniformMatrix4fv(glGetUniformLocation(m_program, "lightSpaceMatrix"), 1, GL_FALSE, &LightSpaceMatrix[0][0]);
 }
 
 Shader::~Shader()

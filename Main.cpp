@@ -93,35 +93,39 @@ int main(int argc, char* argv[])
 	Camera* cam = new Camera(90.0f, 1200.0f/1000.0f, 0.1f, 1000.0f);
 
 	LightBase* light1 = new LightBase();
-	
-	cam->m_transform.setPos(vec3(0, 0, -1));
+	light1->GetTransform().setPos(vec3(0, 1, -5));
+
+
+	cam->m_transform.setPos(vec3(0, 0.5f, -1));
 
 	Shader* basicShader = new Shader("Resources/basic", *cam);
+	Shader* depthShader = new Shader("Resources/depthShader", *cam);
+
 
 	Input* input = new Input( );
 
-	/*GLuint DiffuseTextureID = LoadTexture("assets/brickwall.jpg");
-	GLuint NormalTextureID = LoadTexture("assets/brickwall_normal.jpg");*/
 	
-	////Square
-	//vector<Vertex> SquareVerticies;
+	
+	//Square
+	vector<Vertex> SquareVerticies;
 
-	//SquareVerticies.push_back( Vertex(vec3(-1.0f, 1.0f, 0), vec2(0, 0))); //0
-	//SquareVerticies.push_back( Vertex(vec3(1.0f, -1.0f, 0), vec2(1, 1))); //1
-	//SquareVerticies.push_back(Vertex(vec3(1.0f, 1.0f, 0), vec2(1, 0))); //2
-	//SquareVerticies.push_back( Vertex(vec3(-1.0f, -1.0f, 0), vec2(0, 1))); //3
+	SquareVerticies.push_back( Vertex(vec3(-1.0f, 1.0f, 0), vec2(0, 0))); //0
+	SquareVerticies.push_back( Vertex(vec3(1.0f, -1.0f, 0), vec2(1, 1))); //1
+	SquareVerticies.push_back(Vertex(vec3(1.0f, 1.0f, 0), vec2(1, 0))); //2
+	SquareVerticies.push_back( Vertex(vec3(-1.0f, -1.0f, 0), vec2(0, 1))); //3
 
-	//unsigned int SquareIndicies[]
-	//{
-	//	0,2,1,1,3,0
-	//};
+	unsigned int SquareIndicies[]
+	{
+		0,2,1,1,3,0
+	};
 
-	////square mesh
-	//Mesh Square1(&SquareVerticies[0], SquareVerticies.size(), &SquareIndicies[0], 6);
+	//2D plane for floor
+	Mesh Square1(&SquareVerticies[ 0 ], SquareVerticies.size( ), &SquareIndicies[ 0 ], 6);
+	Square1.m_transform.setScale(Square1.m_transform.getScale( ) * 50.0f);
+	Square1.m_transform.setRot(vec3(glm::radians(90.0f), 0.0f, 0.0f));
+	Square1.m_transform.setPos(vec3(0, -0.6f, 0));
 
-	//Square1.m_transform.setPos(vec3(0, 0, 1.0f));
-
-	//LoadTexture("assets/brickwall.jpg");
+	LoadTexture("assets/brickwall.jpg");
 
 	//block obj
 	string AmbiantLoc = "brick_wall_01_col.tga";
@@ -144,49 +148,104 @@ int main(int argc, char* argv[])
 	Block1.m_transform.setPos(vec3(0, -0.5f, 1));
 	Block1.m_transform.setScale(vec3(0.025f, 0.025f, 0.025f));
 
+	//create depth texture
+	GLuint depthMapFBO;
+	glGenFramebuffers(1, &depthMapFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+
+	GLuint shadowMapID;
+	int shadowWidth = 2048;
+	int shadowHeight = 2048;
+
+	glGenTextures(1, &shadowMapID);
+	glBindTexture(GL_TEXTURE_2D, shadowMapID);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, shadowWidth, shadowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+	GLfloat borderColor[ ] = { 1.0,1.0,1.0,1.0 };
+	glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, borderColor);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, shadowMapID, 0);
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	if ( glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE )
+		cerr << "ERROR: Frame Buffer is Incomplete" << endl;
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+
+	//variable for moving light
 	float SinInput = 0;
 
 	while (!input->KeyIsPressed(KEY_ESCAPE))
 	{
-		input->Update();
+		input->Update(*cam);
 		
-
+		
 		//cam move
 		if (input->KeyIsPressed(KEY_W))
 		{
 			cout << "Forward" << endl;
-			cam->MoveForwardLocal(-0.1f);
+			cam->MoveForwardLocal(0.1f);
 		}
 
 		if (input->KeyIsPressed(KEY_S))
 		{
 			cout << "Back" << endl;
-			cam->MoveForwardLocal(0.1f);
+			cam->MoveForwardLocal(-0.1f);
 		}
 
 		if (input->KeyIsPressed(KEY_A))
 		{
 			cout << "Left" << endl;
-			cam->MoveRightLocal(-0.1f);
+			cam->MoveRightLocal(0.1f);
 		}
 
 		if (input->KeyIsPressed(KEY_D))
 		{
 			cout << "Right" << endl;
-			cam->MoveRightLocal(0.1f);
+			cam->MoveRightLocal(-0.1f);
 		}
 
-		//viewport and lifhrs stuff
-		glClearColor(0.3f, 0.3f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//dEPTH PASS FOR SHADOWS
+		glViewport(0, 0, shadowWidth, shadowHeight);
+		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		GLfloat near_plane = 1.0f, far_plane = 100.0f;
+		mat4 lightProjection = ortho(-20.0f, 20.0f, -20.0f, 20.0f, near_plane, far_plane);
+		vec3 t = light1->GetTransform( ).getPos( );
+		mat4 lightView = lookAt(light1->GetTransform( ).getPos( ), vec3(0), vec3(0, 1, 0));
+		mat4 lightSpaceMatrix = lightProjection * lightView;
+
+		//bind depth shader
+		depthShader->Bind();
+		
+		//draw cube shadow map
+		depthShader->UpdateForShadows(Block1.m_transform, lightSpaceMatrix);
+		glCullFace(GL_FRONT);
+		Block1.Draw( );
+		glCullFace(GL_BACK);
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+
+		//dRAW PASS FOR EVERTHIGN ELSE 
+		glClearColor(0.0f, 0.15f, 0.3f, 1.0f);
 		glViewport(0, 0, 1200, 1000);
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		
+
 		SinInput += 0.03f;
-		light1->GetTransform().setPos(vec3(sin(SinInput), 0, 0));
+		light1->GetTransform().AddPosition(vec3(sin(SinInput), 0, 0));
 		light1->Draw(*cam);
 		cam->Update( );
 
-
-		//bind shader
+		//bind basic shader
 		basicShader->Bind();
 
 		//bind texture
@@ -201,12 +260,21 @@ int main(int argc, char* argv[])
 		glUniform1i(TextureLoc, 1);
 		glBindTexture(GL_TEXTURE_2D, NormalTextureID);
 
-		/*Square1.m_transform.setRot(vec3(180, 0, 0), true);
-		basicShader->Update(Square1.m_transform, *light1);
-		Square1.Draw();*/
+		//bind shadow map
+		glActiveTexture(GL_TEXTURE2);
+		TextureLoc = glGetUniformLocation(basicShader->GetProgram( ), "texture_shadow");
+		glUniform1i(TextureLoc, 2);
+		glBindTexture(GL_TEXTURE_2D, shadowMapID);
 
-		basicShader->Update(Block1.m_transform, *light1);
-		Block1.Draw( );
+		//draw square plane
+		basicShader->Update(Square1.m_transform, *light1, lightSpaceMatrix);
+		Square1.Draw();
+
+		//draw cube
+		basicShader->Update(Block1.m_transform, *light1, lightSpaceMatrix);
+		Block1.Draw();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 		SDL_GL_SwapWindow(window);
 

@@ -1,6 +1,7 @@
 #include "iostream"
 #include "SDL.h"
 #include "Input.h"
+#include "Camera.h"
 
 Input::Input()
 {
@@ -10,10 +11,12 @@ Input::Input()
 	}
 }
 
-void Input::Update(void)
+void Input::Update(Camera &cam)
 {
 	while (SDL_PollEvent(&m_event) != NULL)
 	{
+		cam.MouseMoveTarget(&m_event);
+
 		if (m_event.type == SDL_KEYDOWN)
 		{
 			SDL_Keycode keyPressed = m_event.key.keysym.sym;
