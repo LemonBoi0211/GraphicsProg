@@ -78,6 +78,8 @@ int main(int argc, char* argv[])
 	glewExperimental = GL_TRUE;
 	GLenum status = glewInit();
 
+	SDL_SetRelativeMouseMode(SDL_TRUE);
+
 	//glEnable(GL_CULL_FACE);
 	//glCullFace(GL_BACK);
 	//glFrontFace(GL_CCW);
@@ -106,7 +108,7 @@ int main(int argc, char* argv[])
 
 	
 	
-	//Square
+	//Square for the floor
 	vector<Vertex> SquareVerticies;
 
 	SquareVerticies.push_back( Vertex(vec3(-1.0f, 1.0f, 0), vec2(0, 0))); //0
@@ -127,7 +129,7 @@ int main(int argc, char* argv[])
 
 	LoadTexture("assets/brickwall.jpg");
 
-	//block obj
+	//block obj and textures
 	string AmbiantLoc = "brick_wall_01_col.tga";
 	string DiffuseLoc = "brick_wall_01_col.tga";
 	string SpecLoc = "brick_wall_spec.tga";
@@ -153,6 +155,7 @@ int main(int argc, char* argv[])
 	glGenFramebuffers(1, &depthMapFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
 
+	//create shadowmap
 	GLuint shadowMapID;
 	int shadowWidth = 2048;
 	int shadowHeight = 2048;
@@ -211,6 +214,7 @@ int main(int argc, char* argv[])
 			cam->MoveRightLocal(-0.1f);
 		}
 
+
 		//dEPTH PASS FOR SHADOWS
 		glViewport(0, 0, shadowWidth, shadowHeight);
 		glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
@@ -244,7 +248,7 @@ int main(int argc, char* argv[])
 		light1->GetTransform().AddPosition(vec3(sin(SinInput), 0, 0));
 		light1->Draw(*cam);
 		cam->Update( );
-
+		
 		//bind basic shader
 		basicShader->Bind();
 

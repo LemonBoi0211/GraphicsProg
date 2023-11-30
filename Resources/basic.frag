@@ -48,8 +48,8 @@ float CalculateShadowValue()
 	return shadow;
 }
 
-void main()
 
+void main()
 {	
 
 	//ambient
@@ -74,6 +74,7 @@ void main()
 	float spec = pow(max(dot(normal, reflectDir), 0.0f), 32.0f);
 	vec3 specular = vec3(specularStrength * spec);
 
+	//shadow value for shadow map
 	float shadow = CalculateShadowValue();
 
 	vec4 result = vec4(texture2D(texture_diffuse, FragTextureCoord).rgb +(ambient +(1.0 -shadow)) * (diffuse + specular),0);
